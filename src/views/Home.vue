@@ -10,7 +10,7 @@
                         <img src="../assets/svg/043-hydroponic.svg" class="mt-2 mb-3 center-element" alt="GreenHouse" width="400em">
                         <p class="lead fs-5 fw-normal text-center">Добро пожаловать на сайт дипломного проекта сдудента ДГТУ Ячменева Ярослава Владимировича.</p>
                         <p class="lead fs-5 fw-normal text-center">Для того, чтобы зайти в панель управления</p>
-                        <a type="button" class="btn btn-outline-success btn-lg center-element" style="width: fit-content;">Авторизуйтесь</a>
+                        <router-link to="/user/auth" class="btn btn-outline-success btn-lg center-element" style="width: fit-content;">Авторизуйтесь</router-link>
                         <p class="lead fs-5 fw-normal text-center mt-1">или зайдите </p>
                         <a href="#" class="lead fs-5 fw-normal text-center btn btn-light center-element" style="width: fit-content;">просто посмотреть</a>
 

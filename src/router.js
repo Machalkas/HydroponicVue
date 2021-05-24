@@ -10,5 +10,10 @@ export default new Router({
     routes:[{
         path:'/',
         component: Home
-    }]
+    },
+    {
+        path: '/user/auth',
+        component:()=> import('./views/Auth.vue')
+    }
+]
 })
