@@ -1,5 +1,6 @@
 <template>
     <div>
+        <notifications group="auth" />
          <main style="height: 100%; margin-top: 10em;" class="form-signin text-center">
             <div class="container mt-3">
                 <div class="row mb-3">
@@ -19,31 +20,37 @@
 
                             <div class="tab-content" id="pills-tabContent">
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                                    <form id="log">    
+                                    <div class="alert alert-danger" role="alert" v-bind:class="{ternoff:!loginError}">
+                                        {{error}}
+                                    </div>
+                                    <form id="log" @submit.prevent="Login">    
                                         <div class="form-floating">
-                                          <input type="email" class="form-control" id="email-login" placeholder="name@example.com">
+                                          <input type="email" class="form-control" v-model="email_login" placeholder="name@example.com">
                                           <label for="floatingInput">Email адрес</label>
                                         </div>
                                         <div class="form-floating">
-                                          <input type="password" class="form-control" id="password-login" placeholder="Password">
+                                          <input type="password" class="form-control" v-model="password_login" placeholder="Password">
                                           <label for="floatingPassword">Пароль</label>
                                         </div>
                                         <br>
-                                        <input type="button" class="w-100 btn btn-lg btn-primary" value="Вход" id="login">
+                                        <input type="submit" class="w-100 btn btn-lg btn-primary" value="Вход" id="login">
                                       </form>
                                 </div>
                                 <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                                    <form id="reg">    
+                                    <div class="alert alert-danger" role="alert" v-bind:class="{ternoff:!regError}">
+                                        Не удалось войти с предоставленными учетными данными
+                                    </div>
+                                    <form id="reg" @submit.prevent="Registration">    
                                         <div class="form-floating">
-                                          <input type="email" class="form-control" id="email-reg" placeholder="name@example.com">
+                                          <input type="email" class="form-control" v-model="email_reg" placeholder="name@example.com">
                                           <label for="floatingInput">Email адрес</label>
                                         </div>
                                         <div class="form-floating">
-                                          <input type="password" class="form-control" id="password-reg" placeholder="Password">
+                                          <input type="password" class="form-control" v-model="password_reg" placeholder="Password">
                                           <label for="floatingPassword">Пароль</label>
                                         </div>
                                         <br>
-                                        <input type="button" class="w-100 btn btn-lg btn-primary" value="Регистрация"  id="registration">
+                                        <input type="submit" class="w-100 btn btn-lg btn-primary" value="Регистрация"  id="registration">
                                       </form>
                                 </div>
                                 <p class="mt-5 mb-3 text-muted">2021</p>
@@ -55,6 +62,50 @@
         </main>
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+export default {
+    props:{
+        error:""
+    },
+    data(){
+        return{
+            email_login:'',
+            password_login:'',
+            email_reg:'',
+            password_reg:'',
+            loginError:false,
+            regError:false
+        }
+    },
+    methods:{
+        Login(){ 
+            console.log("start request")
+            if(this.email_login.trim() && this.password_login.trim()){
+                this.loginError=false;
+                axios.post("http://127.0.0.1:8000/auth/token/login",{email:this.email_login, password:this.password_login}).then(
+                    response=>{
+                        // this.resp=response["data"]["auth_token"];
+                        this.$cookies.config('30d');
+                        this.$cookies.set("AuthToken", response["data"]["auth_token"]);
+
+                        }
+                    ).catch(error=>{
+                    this.loginError=true;
+                    this.error=error;
+                    });
+            }
+            else{
+                console.log("error")
+            }
+        },
+        Registration(){
+
+        }
+    }
+}
+</script>
 
 <style scoped>
     .form-signin {
@@ -73,4 +124,7 @@
         border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
+   .ternoff{
+       display:none;
+   }
 </style>

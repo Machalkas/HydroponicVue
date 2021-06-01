@@ -1,8 +1,16 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router' 
+import axios from 'axios'
+
+import Notifications from 'vue-notification'
+import VueCookies from 'vue-cookies'
 
 Vue.config.productionTip = false
+
+Vue.use(axios)
+Vue.use(Notifications)
+Vue.use(VueCookies)
 
 new Vue({
   router,
@@ -19,3 +27,4 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
+
