@@ -9,9 +9,13 @@ import VueCookies from 'vue-cookies'
 Vue.config.productionTip = false
 
 Vue.use(axios)
+
+
 Vue.use(Notifications)
+
 Vue.use(VueCookies)
 Vue.$cookies.config('30d');
+
 new Vue({
   router,
   render: h => h(App),

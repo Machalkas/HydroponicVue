@@ -89,7 +89,7 @@ export default {
             if(this.email_login.trim() && this.password_login.trim()){
                 this.loading_login=true;
                 this.error_login="";
-                axios.post("http://127.0.0.1:8000/auth/token/login",{email:this.email_login, password:this.password_login}).then(
+                axios.post("http://127.0.0.1:8000/auth/token/login/",{email:this.email_login, password:this.password_login}).then(
                     response=>{
                         this.$cookies.set("AuthToken", response["data"]["auth_token"]);
                         }
@@ -108,9 +108,14 @@ export default {
                 axios.post("http://127.0.0.1:8000/auth/users/",{email:this.email_reg, password:this.password_reg}).then(
                     response=>{
                         console.log(response);
-                        // this.$cookies.set("AuthToken", response["data"]["auth_token"]);
-
+                        if(response['data']['email']==this.email_reg){
+                            this.email_login=this.email_reg;
+                            this.password_login=this.password_reg;
+                            this.Login();
+                        }else{
+                            this.error_reg="Ошибка авторизации";
                         }
+                    }
                     ).catch(error=>{
                     this.error_reg=error;
                     }).finally(()=>this.loading_reg=false);
