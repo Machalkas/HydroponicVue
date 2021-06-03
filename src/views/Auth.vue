@@ -63,12 +63,8 @@
 </template>
 
 <script>
-import axios from 'axios';
 // import Loader from '@/components/loader';
 export default {
-    props:{
-
-    },
     data(){
         return{
             email_login:'',
@@ -89,9 +85,10 @@ export default {
             if(this.email_login.trim() && this.password_login.trim()){
                 this.loading_login=true;
                 this.error_login="";
-                axios.post("http://127.0.0.1:8000/auth/token/login/",{email:this.email_login, password:this.password_login}).then(
+                this.axios.post("/auth/token/login/",{email:this.email_login, password:this.password_login}).then(
                     response=>{
                         this.$cookies.set("AuthToken", response["data"]["auth_token"]);
+                        this.$router.push({ name: 'device' });
                         }
                     ).catch(error=>{
                     this.error_login=error;
@@ -105,7 +102,7 @@ export default {
             if(this.email_reg.trim() && this.password_reg.trim()){
                 this.loading_reg=true;
                 this.error_reg="";
-                axios.post("http://127.0.0.1:8000/auth/users/",{email:this.email_reg, password:this.password_reg}).then(
+                this.axios.post("/auth/users/",{email:this.email_reg, password:this.password_reg}).then(
                     response=>{
                         console.log(response);
                         if(response['data']['email']==this.email_reg){

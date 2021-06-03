@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed-top shadow-lg center-element bg-light" style="height: 6em; width: 100%;">
+    <div class="fixed-top shadow-sm center-element bg-light" style="height: 6em; width: 100%;">
     <div class="container">
         <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4">
             <router-link to="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
@@ -16,8 +16,8 @@
             </ul>
     
             <div class="col-md-3 text-end">
-            <a href="#" class="btn btn-outline-danger">Выйти</a>
-            <router-link to="/user/auth" class="btn btn-success">Авторизация</router-link>
+            <a href="#" class="btn btn-outline-danger" v-if="this.$cookies.get('AuthToken')!=null" v-on:click="logout">Выйти</a>
+            <router-link to="/user/auth" class="btn btn-success" v-if="this.$cookies.get('AuthToken')==null">Авторизация</router-link>
             </div>
         </header>
     </div>
@@ -26,6 +26,12 @@
 
 <script>
 export default {
-    name:"Header"
+    name:"Header",
+    methods:{
+        logout:function(){
+            this.$cookies.remove("AuthToken");
+            this.$router.push({ name: 'auth' });
+        } 
+    }
 }
 </script>

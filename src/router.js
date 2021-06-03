@@ -13,7 +13,13 @@ export default new Router({
     },
     {
         path: '/user/auth',
+        name:"auth",
         component:()=> import('./views/Auth.vue')
-    }
+    },
+    {
+        path:'/device',
+        name:'device',
+        component:()=> import('./views/Farms.vue')
+    },
 ]
 })

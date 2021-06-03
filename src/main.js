@@ -9,7 +9,7 @@ import VueCookies from 'vue-cookies'
 Vue.config.productionTip = false
 
 Vue.use(axios)
-
+Vue.prototype.axios=axios.create({baseURL:"http://127.0.0.1:8000", timeout:3000})
 
 Vue.use(Notifications)
 
