@@ -13,4 +13,10 @@
   color: #2c3e50;
   margin-top: 60px;
 }
+.ternoff{
+  display:none;
+}
+p, h1, h2{
+  color: black;
+}
 </style>

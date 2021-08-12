@@ -6,14 +6,14 @@
             <img src="../assets/svg/043-hydroponic.svg" alt="" width="50" class="d-inline-block align-text-top">
             <span class="fs-4">GreenHouse</span>
             </router-link>
-    
+<!--     
             <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
             <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
             <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>
             <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>
             <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
             <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
-            </ul>
+            </ul> -->
     
             <div class="col-md-3 text-end">
             <a href="#" class="btn btn-outline-danger" v-if="this.$cookies.get('AuthToken')!=null" v-on:click="logout">Выйти</a>
