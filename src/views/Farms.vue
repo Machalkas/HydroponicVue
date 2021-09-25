@@ -25,6 +25,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-on:click="sendMessage('qwe')">Отправить</div>
                     </div>
                     <div class="col-md-3 themed-grid-col"></div>
                   </div>
@@ -70,7 +71,13 @@ methods:{
     this.test_socket.onopen = function(event) {
       console.log(event)
       console.log("Successfully connected to the echo websocket server...")
+      console.log(this.test_socket)
     }
+    },
+    sendMessage: function(message) {
+      console.log("Hello")
+      console.log(this.test_socket);
+      this.test_socket.send('{"action":"is_online"}');
     }
     }
 }
