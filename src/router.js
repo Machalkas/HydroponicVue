@@ -17,9 +17,14 @@ export default new Router({
         component:()=> import('./views/Auth.vue')
     },
     {
-        path:'/device',
-        name:'device',
+        path:'/farm',
+        name:'farm',
         component:()=> import('./views/Farms.vue')
+    },
+    {
+        path:'/farm/:id',
+        name: 'daschboard',
+        component:()=>import('./views/Dashboard.vue')
     },
 ]
 })

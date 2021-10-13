@@ -14,7 +14,7 @@
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                             <div v-for="farm in farms">
                                 <div class="col">
-                                    <div class="device" @click="socket_test(farm.id)">
+                                    <div class="device" @click="openFarm(farm.id)">
                                         <p class="ms-3 mb-0 farm_name">{{farm.name}}</p>
                                         <img src="../assets/svg/device_active.svg" alt="" width="160" class="d-inline-block align-text-top img">
                                         <div style="display: flex;position: relative;top: -20%;">
@@ -61,18 +61,19 @@ mounted(){
     }).finally(()=>{this.loading=false})
 },
 methods:{
-    socket_test(id){
-        this.test_socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
+    openFarm(id){
+        this.$router.push('farm/'+id);
+    //     this.test_socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
 
-    this.test_socket.onmessage = function(event) {
-      console.log(event);
-    }
+    // this.test_socket.onmessage = function(event) {
+    //   console.log(event);
+    // }
 
-    this.test_socket.onopen = function(event) {
-      console.log(event)
-      console.log("Successfully connected to the echo websocket server...")
-      console.log(this.test_socket)
-    }
+    // this.test_socket.onopen = function(event) {
+    //   console.log(event)
+    //   console.log("Successfully connected to the echo websocket server...")
+    //   console.log(this.test_socket)
+    // }
     },
     sendMessage: function(message) {
       console.log("Hello")
