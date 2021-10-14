@@ -1,5 +1,6 @@
 <template>
 <div>
+    <notifications group="foo" />
     <Header/>
             <main style="height: 100%; margin-top: 8em;">
             <div class="container mt-3">
@@ -7,9 +8,6 @@
                     <div class="col-md-3 themed-grid-col"></div>
                     <div class="col-md-6 themed-grid-col">
                         <h2 class="text-center fw-normal mb-5">Выбор устройства</h2>
-                        <div class="alert alert-danger" role="alert" v-bind:class="{ternoff:!error}">
-                            {{error}}
-                        </div>
                         <Loader v-if="loading"/>
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                             <div v-for="farm in farms">
@@ -25,7 +23,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-on:click="sendMessage('qwe')">Отправить</div>
                     </div>
                     <div class="col-md-3 themed-grid-col"></div>
                   </div>
@@ -53,32 +50,28 @@ components:{
     Header, Footer, Loader
 },
 mounted(){
-    this.axios.get("/api/get-farms/",{headers: {'Authorization': 'Token '+this.$cookies.get("AuthToken")}}).then(responce=>{
-        console.log(responce['data']['farms']);
-        this.farms=responce['data']['farms'];
-    }).catch(error=>{
-        this.error=error;
-    }).finally(()=>{this.loading=false})
+   this.getFapms()
 },
 methods:{
     openFarm(id){
         this.$router.push('farm/'+id);
-    //     this.test_socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
-
-    // this.test_socket.onmessage = function(event) {
-    //   console.log(event);
-    // }
-
-    // this.test_socket.onopen = function(event) {
-    //   console.log(event)
-    //   console.log("Successfully connected to the echo websocket server...")
-    //   console.log(this.test_socket)
-    // }
     },
-    sendMessage: function(message) {
-      console.log("Hello")
-      console.log(this.test_socket);
-      this.test_socket.send('{"action":"is_online"}');
+    getFapms(){
+        console.log("getfarms")
+        this.axios.get("/api/get-farms/",{headers: {'Authorization': 'Token '+this.$cookies.get("AuthToken")}}).then(responce=>{
+            console.log(responce['data']['farms']);
+            this.farms=responce['data']['farms'];
+            this.loading=false;
+        }).catch(error=>{
+            console.log("error")
+            this.$notify({
+                    group: 'foo',
+                    type:'error',
+                    title: 'Ошибка',
+                    text: error
+            });
+            setTimeout(this.getFapms(),10000)
+        }).else(()=>{})
     }
     }
 }
