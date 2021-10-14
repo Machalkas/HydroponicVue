@@ -1,5 +1,6 @@
 <template>
     <div>
+        <notifications group="foo" />
        <Header/>
             <main style="height: 100%; margin-top: 8em;">
             <div class="container mt-3">
@@ -15,7 +16,30 @@
                         </div>
                         <Loader v-if="loading"/>
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-
+                            <div>
+                                <p>Влажность</p>
+                                <p>-</p>
+                            </div>
+                            <div>
+                                <p>Температура</p>
+                                <p>-</p>
+                            </div>
+                            <div>
+                                <p>Температура раствора</p>
+                                <p>-</p>
+                            </div>
+                            <div>
+                                <p>CO2</p>
+                                <p>-</p>
+                            </div>
+                            <div>
+                                <p>PH</p>
+                                <p>-</p>
+                            </div>
+                            <div>
+                                <p>TDS</p>
+                                <p>-</p>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3 themed-grid-col"></div>
@@ -30,6 +54,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Loader from '@/components/loader';
+import Notifications from 'vue-notification'
 
 export default{
     data(){
@@ -37,7 +62,7 @@ export default{
             loading:true,
             socket:null,
             error:"",
-            name:"...",
+            name:"",
             is_online:false
         }
     },
@@ -45,18 +70,26 @@ export default{
         Header,Footer,Loader
     },
     mounted(){
+        console.log(this.x)
         let vm=this
-        try{
-            this.socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
-        }catch(error){
-            this.error=error;
-        }finally{}
-
+         this.socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
         this.socket.onopen = function(event) {
+            vm.error=""
             vm.sendMessage('farm_name')
             vm.loading=false
         }
-// в onmessage не видно переменные и методы, потому что это другой this 
+
+        this.socket.onerror = function(error){
+            // vm.error="не удалось подключиться"
+            vm.$notify({
+                group: 'foo',
+                type:'error',
+                title: 'Ошибка',
+                text: 'Не удалось подключиться'
+            });
+            setTimeout(()=>vm.socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
+        }
+
         this.socket.onmessage = function(event) {
             let data=JSON.parse(event['data'])
             console.log(data)
@@ -75,6 +108,10 @@ export default{
         }
     },
     methods:{
+        socketConnect(){
+            this.socket.close(1000, "работа закончена")
+            this.socket = new WebSocket('ws://127.0.0.1:8000/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
+        },
         sendMessage(action,options='{}') {
             console.log("sending: "+'{"action":"'+action+'","options":'+options+'}')
             this.socket.send('{"action":"'+action+'","options":'+options+'}');
@@ -94,7 +131,8 @@ export default{
         background-color: #2CB867;  
     }
     .offline{
-        border: 2px solid #FF0000;
-        background-color: #FF0000;  
+        display: none;
+        /* border: 2px solid #FF0000;
+        background-color: #FF0000;   */
     }
 </style>

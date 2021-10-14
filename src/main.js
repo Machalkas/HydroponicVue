@@ -13,6 +13,7 @@ Vue.prototype.axios=axios.create({baseURL:"http://127.0.0.1:8000", timeout:3000}
 
 Vue.use(Notifications)
 
+x="global varibal"
 
 Vue.use(VueCookies)
 Vue.$cookies.config('30d');
