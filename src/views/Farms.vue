@@ -51,6 +51,7 @@ components:{
 },
 mounted(){
    this.getFapms()
+   setInterval(()=>this.getFapms(),10000)
 },
 methods:{
     openFarm(id){
@@ -70,8 +71,7 @@ methods:{
                     title: 'Ошибка',
                     text: error
             });
-            setTimeout(this.getFapms(),10000)
-        }).else(()=>{})
+        })
     }
     }
 }

@@ -11,9 +11,6 @@
                             <h2 class="text-center fw-normal mb-5">{{name}}</h2>
                             <div class="ms-3 mt-1 indicator" v-bind:class="{online:is_online, offline:!is_online}"></div>
                         </div>
-                        <!-- <div class="alert alert-danger" role="alert" v-bind:class="{ternoff:!error}">
-                            {{error}}
-                        </div> -->
                         <Loader v-if="loading"/>
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                             <div class="col s_indicator">
@@ -121,7 +118,6 @@ export default{
                 else if(data['sensors_data']!=undefined){
                     let d=data['sensors_data'];
                     for (let i in d){
-                        // console.log(d[i]+' '+typeof(d[i]))
                         if(typeof(d[i])=== 'number'){
                             d[i]=d[i].toFixed(1)
                         }
