@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router' 
-import axios from 'axios'
+import router from './router'
 
+import axios from 'axios'
 import Notifications from 'vue-notification'
 import VueCookies from 'vue-cookies'
+import VueApexCharts from 'vue-apexcharts'
 
 Vue.config.productionTip = false
 
@@ -18,6 +19,9 @@ Vue.use(Notifications)
 
 Vue.use(VueCookies)
 Vue.$cookies.config('30d');
+
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
 
 new Vue({
   router,

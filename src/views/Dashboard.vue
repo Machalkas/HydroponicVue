@@ -38,6 +38,15 @@
                                 <p class="s_indicator_val">{{tds}}ppm</p>
                             </div>
                         </div>
+
+                        <div>
+                            <div>
+                                <apexchart width="500" type="line" :options="chartOptions" :series="series"></apexchart>
+                            </div>
+                            <div>
+                                <apexchart width="500" type="area" :options="chartOptions2" :series="series2"></apexchart>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3 themed-grid-col"></div>
                   </div>
@@ -65,14 +74,43 @@ export default{
             w_temp:"-",
             co2:"-",
             ph:"-",
-            tds:"-"
+            tds:"-",
+
+        chartOptions: {
+          chart: {
+            id: 'vuechart-example'
+          },
+          xaxis: {
+            categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+          }
+        }
+        ,
+        chartOptions2: {
+          chart: {
+            id: 'vuechart-example'
+          },
+          xaxis: {
+            categories: [0, 1, 2, 3, 4, 5, 6, 7]
+          }
+        },
+        series: [{
+          name: 'series-1',
+          data: [30, 40, 35, 50, 49, 60, 70, 91]
+        }],
+        series2:[{
+          name: 'kek-1',
+          data: [30, 40, 35, 0, 49, 60, 70, 91]
+        },
+        {name: 'kek-2',
+        data: [0.1,0.2,1,0.3,0.2,0.5,1,5]
+        }]
         }
     },
     components:{
         Header,Footer,Loader
     },
     mounted(){
-        console.log(this.$hostname)
+        setInterval(function(){this.socket.readstate==0},1000)
         let vm=this
          this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
         this.socket.onopen = function(event) {
@@ -134,10 +172,10 @@ export default{
         }
     },
     methods:{
-        socketConnect(){
-            this.socket.close(1000, "работа закончена")
-            this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
-        },
+        // socketConnect(){
+        //     this.socket.close(1000, "работа закончена")
+        //     this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
+        // },
         sendMessage(action,options='{}') {
             console.log("sending: "+'{"action":"'+action+'","options":'+options+'}')
             this.socket.send('{"action":"'+action+'","options":'+options+'}');
