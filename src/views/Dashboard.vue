@@ -41,10 +41,7 @@
 
                         <div>
                             <div>
-                                <apexchart width="500" type="line" :options="chartOptions" :series="series"></apexchart>
-                            </div>
-                            <div>
-                                <apexchart width="500" type="area" :options="chartOptions2" :series="series2"></apexchart>
+                                <apexchart width="500" type="area" :options="chartOptions" :series="series"></apexchart>
                             </div>
                         </div>
                     </div>
@@ -76,34 +73,32 @@ export default{
             ph:"-",
             tds:"-",
 
-        chartOptions: {
-          chart: {
-            id: 'vuechart-example'
-          },
-          xaxis: {
-            categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-          }
-        }
-        ,
-        chartOptions2: {
-          chart: {
-            id: 'vuechart-example'
-          },
-          xaxis: {
-            categories: [0, 1, 2, 3, 4, 5, 6, 7]
-          }
-        },
-        series: [{
-          name: 'series-1',
-          data: [30, 40, 35, 50, 49, 60, 70, 91]
-        }],
-        series2:[{
-          name: 'kek-1',
-          data: [30, 40, 35, 0, 49, 60, 70, 91]
-        },
-        {name: 'kek-2',
-        data: [0.1,0.2,1,0.3,0.2,0.5,1,5]
-        }]
+            series: [{
+                name: 'PH',
+                data: []
+            },
+            {
+                name:'TDS',
+                data:[]
+            }],
+
+            chartOptions: {
+                chart: {
+                    type: "area",
+                    dataLabels:{
+                        enabled: false
+                    }
+                },
+            },
+            xaxis: {
+               type: "datetime",
+            },
+            tooltip:{
+                x:{
+                    format:'dd MMM yyyy'
+                }
+            },
+            selection: 'ytd',
         }
     },
     components:{
@@ -115,6 +110,7 @@ export default{
          this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
         this.socket.onopen = function(event) {
             vm.sendMessage('farm_name')
+            vm.sendMessage('get_statistic')
             vm.loading=false
         }
 
@@ -166,6 +162,18 @@ export default{
                     vm.ph=d["ph"];
                     vm.tds=d["tds"];
                     vm.w_temp=d["water_temp"];
+                }
+                else if(data["statistic"]!=undefined){
+                    data=data["statistic"]
+                    // let new_data=vm.series[0].data
+                    for(let i in data){
+                        let field = data[i]["fields"]
+                        let datetime=new Date(field["record_date"])//.valueOf()
+                        vm.series[0].data.push({x:datetime,y:field["ph"].toFixed(2)})
+                        vm.series[1].data.push({x:datetime,y:field["tds"].toFixed(2)})
+                    }
+                    // vm.series[0]={data:new_data}
+
                 }
             }
             
