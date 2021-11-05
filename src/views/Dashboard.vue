@@ -5,8 +5,8 @@
             <main style="height: 100%; margin-top: 8em;">
             <div class="container mt-3">
                 <div class="row mb-3">
-                    <div class="col-md-3 themed-grid-col"></div>
-                    <div class="col-md-6 themed-grid-col">
+                    <div class="col-md-2 themed-grid-col"></div>
+                    <div class="col-md-8 themed-grid-col">
                         <div style="display: flex; justify-content: center;">
                             <h2 class="text-center fw-normal mb-5">{{name}}</h2>
                             <div class="ms-3 mt-1 indicator" v-bind:class="{online:is_online, offline:!is_online}"></div>
@@ -41,11 +41,14 @@
 
                         <div>
                             <div>
-                                <apexchart width="500" type="area" :options="chartOptions" :series="series"></apexchart>
+                                <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
+                            </div>
+                            <div>
+                                <apexchart height="200" type="line" :options="chartOptionsLine" :series="series"></apexchart>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 themed-grid-col"></div>
+                    <div class="col-md-2 themed-grid-col"></div>
                   </div>
             </div>
         </main>
@@ -80,25 +83,95 @@ export default{
             {
                 name:'TDS',
                 data:[]
+            },
+            {
+                name:'температура раствора',
+                data:[]
+            },
+            {
+                name:'температура воздуха',
+                data:[]
+            },
+            {
+                name:'влажность',
+                data:[]
+            },
+            {
+                name:'CO2',
+                data:[]
             }],
 
             chartOptions: {
                 chart: {
-                    type: "area",
-                    dataLabels:{
+                    id: "main_chart",
+                    type: "line",
+                    toolbar: {
+                        autoSelected: 'pan',
+                        show: false
+                    },
+                    animations:{
+                        enabled: false,
+                    },
+                    
+                },
+                dataLabels:{
                         enabled: false
+                    },
+                    
+                xaxis: {
+                    type: "datetime",
+                },
+                
+                tooltip:{
+                    y:{
+                        formatter:function(val,i){
+                            if(i.seriesIndex==1 || i.seriesIndex==5){//co2 и tds
+                                return val+"ppm";
+                            }
+                            else if(i.seriesIndex==2 || i.seriesIndex==3){//температура
+                                return val+"°C";
+                            }
+                            else if(i.seriesIndex==4){//влажность
+                                return val+"%";
+                            }
+                            else{
+                                return val;
+                            }
+                        }
                     }
                 },
             },
-            xaxis: {
-               type: "datetime",
-            },
-            tooltip:{
-                x:{
-                    format:'dd MMM yyyy'
+            chartOptionsLine:{
+                chart:{
+                    type:"line",
+                    brush:{
+                        target:"main_chart",
+                        enabled: true
+                    },
+                    toolbar:{
+                        enabled:false
+                    },
+                    selection:{
+                        enabled: true,
+                        xaxis:{
+                            range:5
+                            // min: function(){let d=new Date();d.setDate(d.getDate()-7);return d.getTime()},
+                            // max: new Date().getTime(),
+                        }
+                    },
+                    xaxis:{
+                        type: "datetime",
+                        tooltip:{
+                            enabled:false
+                        },
+                        labels:{
+                            show:false
+                        }
+                        
+                    },
+                    
                 }
-            },
-            selection: 'ytd',
+            }
         }
     },
     components:{
@@ -168,9 +241,13 @@ export default{
                     // let new_data=vm.series[0].data
                     for(let i in data){
                         let field = data[i]["fields"]
-                        let datetime=new Date(field["record_date"])//.valueOf()
-                        vm.series[0].data.push({x:datetime,y:field["ph"].toFixed(2)})
-                        vm.series[1].data.push({x:datetime,y:field["tds"].toFixed(2)})
+                        let datetime=new Date(field["record_date"]).getTime()
+                        vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
+                        vm.series[1].data.push({x:datetime,y:(field["tds"]!=null)?field["tds"].toFixed(2):null})
+                        vm.series[2].data.push({x:datetime,y:(field["water_temp"]!=null)?field["water_temp"].toFixed(2):null})
+                        vm.series[3].data.push({x:datetime,y:(field["air_temp"]!=null)?field["air_temp"].toFixed(2):null})
+                        vm.series[4].data.push({x:datetime,y:(field["humidity"]!=null)?field["humidity"].toFixed(2):null})
+                        vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
                     }
                     // vm.series[0]={data:new_data}
 
