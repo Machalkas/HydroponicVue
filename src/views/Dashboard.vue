@@ -105,6 +105,8 @@ export default{
                 chart: {
                     id: "main_chart",
                     type: "line",
+                    locales: [require("../assets/ru_charts.json")],
+                    defaultLocale: 'ru',
                     toolbar: {
                         autoSelected: 'pan',
                         show: false
@@ -114,6 +116,10 @@ export default{
                     },
                     
                 },
+                title:{
+                    text:"Статистика",
+                    align:"center"
+                    },
                 dataLabels:{
                         enabled: false
                     },
@@ -125,17 +131,19 @@ export default{
                 tooltip:{
                     y:{
                         formatter:function(val,i){
-                            if(i.seriesIndex==1 || i.seriesIndex==5){//co2 и tds
-                                return val+"ppm";
-                            }
-                            else if(i.seriesIndex==2 || i.seriesIndex==3){//температура
-                                return val+"°C";
-                            }
-                            else if(i.seriesIndex==4){//влажность
-                                return val+"%";
-                            }
-                            else{
-                                return val;
+                            if(val!=null){
+                                if(i.seriesIndex==1 || i.seriesIndex==5){//co2 и tds
+                                    return val+"ppm";
+                                }
+                                else if(i.seriesIndex==2 || i.seriesIndex==3){//температура
+                                    return val+"°C";
+                                }
+                                else if(i.seriesIndex==4){//влажность
+                                    return val+"%";
+                                }
+                                else{
+                                    return val;
+                                }
                             }
                         }
                     }
@@ -144,6 +152,8 @@ export default{
             chartOptionsLine:{
                 chart:{
                     type:"line",
+                    locales: [require("../assets/ru_charts.json")],
+                    defaultLocale: 'ru',
                     brush:{
                         target:"main_chart",
                         enabled: true
@@ -171,7 +181,7 @@ export default{
                     },
                     
                 }
-            }
+            },
         }
     },
     components:{
@@ -184,6 +194,7 @@ export default{
         this.socket.onopen = function(event) {
             vm.sendMessage('farm_name')
             vm.sendMessage('get_statistic')
+            vm.sendMessage('get_timetable')
             vm.loading=false
         }
 
@@ -240,7 +251,7 @@ export default{
                     data=data["statistic"]
                     // let new_data=vm.series[0].data
                     for(let i in data){
-                        let field = data[i]["fields"]
+                        let field=data[i]["fields"]
                         let datetime=new Date(field["record_date"]).getTime()
                         vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
                         vm.series[1].data.push({x:datetime,y:(field["tds"]!=null)?field["tds"].toFixed(2):null})
@@ -252,6 +263,20 @@ export default{
                     // vm.series[0]={data:new_data}
 
                 }
+                // else if(data["timetable"]!=undefined){
+                //     data=data["timetable"]
+                //     for(let i in data){
+                //         let field=data[i]["fields"]
+                //         let date=new Date(field["date"])
+                //         vm.timeline[0].data.push({x:'параметры',y:[date.getTime(),date.getTime()+1]})
+                //         for(let val in field){
+                //             if(field[val]!=null && val!="date"){
+                //                 // console.log(val+" "+field[val])
+                //                 // vm.timeline[0].data.push({x:val+" "+field[val],y:[date.getTime(),date.getTime()+1]})
+                //             }
+                //         }
+                //     }
+                // }
             }
             
         }
