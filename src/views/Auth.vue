@@ -91,7 +91,7 @@ export default {
                 this.axios.post("/auth/token/login/",{email:this.email_login, password:this.password_login}).then(
                     response=>{
                         this.$cookies.set("AuthToken", response["data"]["auth_token"]);
-                        this.$router.push({ name: 'device' });
+                        this.$router.push({ name: 'farm' });
                         }
                     ).catch(error=>{
                     this.error_login=error;

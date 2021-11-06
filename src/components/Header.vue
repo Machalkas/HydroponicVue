@@ -22,12 +22,13 @@
 </template>
 
 <script>
+import router from '../router';
 export default {
     name:"Header",
     methods:{
         logout:function(){
             this.$cookies.remove("AuthToken");
-            this.$router.push({ name: 'auth' });
+            router.push({ name: 'auth' });
         } 
     }
 }
