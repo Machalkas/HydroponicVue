@@ -184,6 +184,11 @@ export default{
             },
         }
     },
+    metaInfo(){
+        return{
+        title: this.name
+        }
+    },
     components:{
         Header,Footer,Loader
     },

@@ -6,6 +6,7 @@ import axios from 'axios'
 import Notifications from 'vue-notification'
 import VueCookies from 'vue-cookies'
 import VueApexCharts from 'vue-apexcharts'
+import VueMeta from 'vue-meta'
 
 Vue.config.productionTip = false
 
@@ -15,6 +16,7 @@ Vue.prototype.$hostname = '127.0.0.1:8000'
 Vue.use(axios)
 Vue.prototype.axios=axios.create({baseURL:"http://"+Vue.prototype.$hostname, timeout:3000})
 
+Vue.use(VueMeta)
 Vue.use(Notifications)
 
 Vue.use(VueCookies)

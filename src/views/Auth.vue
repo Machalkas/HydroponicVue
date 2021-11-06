@@ -65,6 +65,9 @@
 <script>
 // import Loader from '@/components/loader';
 export default {
+    metaInfo: {
+      title: 'Авторизация'
+    },
     data(){
         return{
             email_login:'',

@@ -38,6 +38,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Loader from '@/components/loader';
 export default{
+    metaInfo: {
+      title: 'Фермы'
+    },
 data(){
     return{
     farms:[],

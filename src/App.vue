@@ -20,3 +20,15 @@ p, h1, h2{
   color: black;
 }
 </style>
+
+<script>
+export default {
+    name: 'App',
+    metaInfo: {
+      // if no subcomponents specify a metaInfo.title, this title will be used
+      title: 'GreenHouse',
+      // all titles will be injected into this template
+      titleTemplate: '%s | GreenHouse'
+    }
+  }
+</script>
