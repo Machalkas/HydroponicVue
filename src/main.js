@@ -6,6 +6,7 @@ import axios from 'axios'
 import Notifications from 'vue-notification'
 import VueCookies from 'vue-cookies'
 import VueApexCharts from 'vue-apexcharts'
+import VCalendar from 'v-calendar';
 import VueMeta from 'vue-meta'
 
 Vue.config.productionTip = false
@@ -24,6 +25,10 @@ Vue.$cookies.config('30d');
 
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
+
+Vue.use(VCalendar, {
+  componentPrefix: 'vc'
+});
 
 new Vue({
   router,

@@ -3,7 +3,8 @@
         <notifications group="foo" />
        <Header/>
             <main style="height: 100%; margin-top: 8em;">
-            <div class="container mt-3">
+            <Loader v-if="loading"/>
+            <div class="container mt-3" v-if="!loading">
                 <div class="row mb-3">
                     <div class="col-md-2 themed-grid-col"></div>
                     <div class="col-md-8 themed-grid-col">
@@ -11,7 +12,7 @@
                             <h2 class="text-center fw-normal mb-5">{{name}}</h2>
                             <div class="ms-3 mt-1 indicator" v-bind:class="{online:is_online, offline:!is_online}"></div>
                         </div>
-                        <Loader v-if="loading"/>
+                        <!-- <Loader v-if="loading"/> -->
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                             <div class="col s_indicator">
                                 <p class="s_indicator_name">Влажность</p>
@@ -39,11 +40,12 @@
                             </div>
                         </div>
 
-                        <div>
-                            <div>
+                        <div class="mt-3">
+                            <Loader v-if="loading_charts"/>
+                            <div v-if="!loading_charts">
                                 <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
                             </div>
-                            <div>
+                            <div v-if="!loading_charts">
                                 <apexchart height="200" type="line" :options="chartOptionsLine" :series="series"></apexchart>
                             </div>
                         </div>
@@ -65,6 +67,7 @@ export default{
     data(){
         return{
             loading:true,
+            loading_charts:true,
             socket:null,
             name:"",
             is_online:false,
@@ -193,9 +196,9 @@ export default{
         Header,Footer,Loader
     },
     mounted(){
-        setInterval(function(){this.socket.readstate==0},1000)
+        setInterval(function(){console.log(this.socket);if(this.socket==null || this.socket.readyState==3){console.log(true);this.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken"))}},1000)
         let vm=this
-         this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
+        this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
         this.socket.onopen = function(event) {
             vm.sendMessage('farm_name')
             vm.sendMessage('get_statistic')
@@ -210,7 +213,8 @@ export default{
                 title: 'Ошибка',
                 text: 'Не удалось подключиться'
             })
-            setTimeout(()=>vm.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
+            // setTimeout(()=>console.log("test timeout"),1000)
+            // setTimeout(()=>vm.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
         }
 
         this.socket.onmessage = function(event) {
@@ -265,6 +269,7 @@ export default{
                         vm.series[4].data.push({x:datetime,y:(field["humidity"]!=null)?field["humidity"].toFixed(2):null})
                         vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
                     }
+                    vm.loading_charts=false;
                     // vm.series[0]={data:new_data}
 
                 }
