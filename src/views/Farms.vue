@@ -45,6 +45,7 @@ data(){
     return{
     farms:[],
     loading:true,
+    interval_timer:null,
     // error:"",
     // test_socket:null
     }
@@ -54,10 +55,14 @@ components:{
 },
 mounted(){
    this.getFapms()
-   setInterval(()=>this.getFapms(),10000)
+   this.interval_timer=setInterval(()=>this.getFapms(),10000)
 },
 methods:{
     openFarm(id){
+        if (this.interval_timer){
+            clearInterval(this.interval_timer)
+            this.interval_timer=0
+        }
         this.$router.push('farm/'+id);
     },
     getFapms(){

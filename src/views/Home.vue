@@ -26,9 +26,15 @@
 <script>
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import router from '../router'
 export default{
 components:{
     Header, Footer
+},
+beforeMount(){
+    if(this.$cookies.get('AuthToken')!=null){
+        router.push({name: "farm"})
+    }
 }
 }
 </script>
