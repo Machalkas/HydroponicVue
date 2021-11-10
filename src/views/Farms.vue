@@ -9,7 +9,7 @@
                     <div class="col-md-6 themed-grid-col">
                         <h2 class="text-center fw-normal mb-5">Выбор устройства</h2>
                         <Loader v-if="loading"/>
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" v-if="!loading">
                             <div v-for="farm in farms">
                                 <div class="col">
                                     <div class="device" @click="openFarm(farm.id)">
@@ -45,8 +45,8 @@ data(){
     return{
     farms:[],
     loading:true,
-    error:"",
-    test_socket:null
+    // error:"",
+    // test_socket:null
     }
 },
 components:{
@@ -68,6 +68,7 @@ methods:{
             this.loading=false;
         }).catch(error=>{
             console.log("error")
+            this.loading=true
             this.$notify({
                     group: 'foo',
                     type:'error',

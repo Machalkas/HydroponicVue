@@ -13,36 +13,51 @@
                             <div class="ms-3 mt-1 indicator" v-bind:class="{online:is_online, offline:!is_online}"></div>
                         </div>
                         <!-- <Loader v-if="loading"/> -->
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">Влажность</p>
-                                <p class="s_indicator_val">{{hum}}%</p>
-                            </div>
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">Температура</p>
-                                <p class="s_indicator_val">{{temp}}°C</p>
-                            </div>
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">Температура раствора</p>
-                                <p class="s_indicator_val">{{w_temp}}°C</p>
-                            </div>
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">CO2</p>
-                                <p class="s_indicator_val">{{co2}}ppm</p>
-                            </div>
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">PH</p>
-                                <p class="s_indicator_val">{{ph}}ph</p>
-                            </div>
-                            <div class="col s_indicator">
-                                <p class="s_indicator_name">TDS</p>
-                                <p class="s_indicator_val">{{tds}}ppm</p>
+                        <div class="container">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">Влажность</p>
+                                        <p class="s_indicator_val">{{hum}}%</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">Температура</p>
+                                        <p class="s_indicator_val">{{temp}}°C</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">Температура раствора</p>
+                                        <p class="s_indicator_val">{{w_temp}}°C</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">CO2</p>
+                                        <p class="s_indicator_val">{{co2}}ppm</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">PH</p>
+                                        <p class="s_indicator_val">{{ph}}</p>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="s_indicator">
+                                        <p class="s_indicator_name">TDS</p>
+                                        <p class="s_indicator_val">{{tds}}ppm</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="mt-3">
                             <Loader v-if="loading_charts"/>
                             <div v-if="!loading_charts">
+                                <p class="text-center fw-normal mt-5 fs-4">Статистика</p>
                                 <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
                             </div>
                             <div v-if="!loading_charts">
@@ -69,7 +84,7 @@ export default{
             loading:true,
             loading_charts:true,
             socket:null,
-            name:"",
+            name:"...",
             is_online:false,
             timerID:0,
 
@@ -120,10 +135,10 @@ export default{
                     },
                     
                 },
-                title:{
-                    text:"Статистика",
-                    align:"center"
-                    },
+                // title:{
+                //     text:"Статистика",
+                //     align:"center"
+                //     },
                 dataLabels:{
                         enabled: false
                     },
@@ -319,10 +334,11 @@ export default{
 
 <style scoped>
     .s_indicator{
-        border: 1px solid #828282;
+        border: 2px solid #828282;
+        border-radius: 10px;
     }
     .s_indicator_name{
-        font-size: 1.5em;
+        font-size: 1.4em;
     }
     .s_indicator_val{
         font-size: 1.2em;
