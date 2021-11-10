@@ -87,6 +87,8 @@ export default{
             name:"...",
             is_online:false,
             timerID:0,
+            min_date:null,
+            max_date:null,
 
             hum:"-",
             temp:"-",
@@ -131,7 +133,11 @@ export default{
                         show: false
                     },
                     animations:{
-                        enabled: false,
+                        enabled: true,
+                        easing: "linear",
+                         animateGradually: {
+                            enabled: false,
+                        },
                     },
                     
                 },
@@ -183,9 +189,9 @@ export default{
                     selection:{
                         enabled: true,
                         xaxis:{
-                            range:5
-                            // min: function(){let d=new Date();d.setDate(d.getDate()-7);return d.getTime()},
-                            // max: new Date().getTime(),
+                            range:5,
+                            min: this.min_date,
+                            max: this.max_date,
                         }
                     },
                     xaxis:{
@@ -292,9 +298,10 @@ export default{
                     else if(data["statistic"]!=undefined){
                         data=data["statistic"]
                         // let new_data=vm.series[0].data
+                         let datetime
                         for(let i in data){
                             let field=data[i]["fields"]
-                            let datetime=new Date(field["record_date"]).getTime()
+                            datetime=new Date(field["record_date"]).getTime()
                             vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
                             vm.series[1].data.push({x:datetime,y:(field["tds"]!=null)?field["tds"].toFixed(2):null})
                             vm.series[2].data.push({x:datetime,y:(field["water_temp"]!=null)?field["water_temp"].toFixed(2):null})
@@ -303,6 +310,11 @@ export default{
                             vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
                         }
                         vm.loading_charts=false;
+                        vm.min_date=datetime
+                        datetime=new Date(datetime)
+                        datetime.setDate(datetime.getDate()-7)
+                        vm.max_date=datetime.getTime()
+                        
                         // vm.series[0]={data:new_data}
 
                     }
