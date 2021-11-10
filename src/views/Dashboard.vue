@@ -71,6 +71,7 @@ export default{
             socket:null,
             name:"",
             is_online:false,
+            timerID:0,
 
             hum:"-",
             temp:"-",
@@ -196,106 +197,118 @@ export default{
         Header,Footer,Loader
     },
     mounted(){
-        setInterval(function(){console.log(this.socket);if(this.socket==null || this.socket.readyState==3){console.log(true);this.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken"))}},1000)
-        let vm=this
-        this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
-        this.socket.onopen = function(event) {
-            vm.sendMessage('farm_name')
-            vm.sendMessage('get_statistic')
-            vm.sendMessage('get_timetable')
-            vm.loading=false
-        }
+        this.socketStart()
+        // setInterval(function(){console.log(this.socket);if(this.socket==null || this.socket.readyState==3){console.log(true);this.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken"))}},1000)
+        
+    },
+    methods:{
+        socketStart(){
+            let vm=this
+            this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
+            this.socket.onopen = function(event) {
+                if (vm.timerID){
+                    clearInterval(vm.timerID)
+                    vm.timerID=0
+                }
+                vm.sendMessage('farm_name')
+                vm.sendMessage('get_statistic')
+                vm.sendMessage('get_timetable')
+                vm.loading=false
+            }
 
-        this.socket.onerror = function(error){
-            vm.$notify({
-                group: 'foo',
-                type:'error',
-                title: 'Ошибка',
-                text: 'Не удалось подключиться'
-            })
-            // setTimeout(()=>console.log("test timeout"),1000)
-            // setTimeout(()=>vm.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
-        }
-
-        this.socket.onmessage = function(event) {
-            let data=JSON.parse(event['data'])
-            console.log(data)
-            if (data['error']!=undefined){
+            this.socket.onerror = function(error){
                 vm.$notify({
                     group: 'foo',
                     type:'error',
                     title: 'Ошибка',
-                    text: data['error']
-            })
-            }else{
-                if(data['farm_name']!=undefined){
-                    vm.name=data['farm_name']
+                    text: 'Не удалось подключиться'
+                })
+                // setTimeout(()=>console.log("test timeout"),1000)
+                // setTimeout(()=>vm.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
+            }
+
+            this.socket.onclose = function(){
+                vm.loading=true
+                vm.loading_charts=true
+                if(!vm.timerID){
+                    vm.timerID=setInterval(function(){vm.socketStart()}, 5000)
                 }
-                else if(data['is_online']!=undefined){
-                    vm.is_online=data['is_online']
-                    if (!data['is_online']){
-                        vm.temp='-';
-                        vm.co2='-';
-                        vm.hum='-';
-                        vm.ph='-';
-                        vm.tds='-';
-                        vm.w_temp='-';
+            }
+
+            this.socket.onmessage = function(event) {
+                let data=JSON.parse(event['data'])
+                console.log(data)
+                if (data['error']!=undefined){
+                    vm.$notify({
+                        group: 'foo',
+                        type:'error',
+                        title: 'Ошибка',
+                        text: data['error']
+                })
+                }else{
+                    if(data['farm_name']!=undefined){
+                        vm.name=data['farm_name']
                     }
-                }
-                else if(data['sensors_data']!=undefined){
-                    let d=data['sensors_data'];
-                    for (let i in d){
-                        if(typeof(d[i])=== 'number'){
-                            d[i]=d[i].toFixed(1)
+                    else if(data['is_online']!=undefined){
+                        vm.is_online=data['is_online']
+                        if (!data['is_online']){
+                            vm.temp='-';
+                            vm.co2='-';
+                            vm.hum='-';
+                            vm.ph='-';
+                            vm.tds='-';
+                            vm.w_temp='-';
                         }
                     }
-                    vm.temp=d["air_temp"];
-                    vm.co2=d["co2"];
-                    vm.hum=d["humidity"];
-                    vm.ph=d["ph"];
-                    vm.tds=d["tds"];
-                    vm.w_temp=d["water_temp"];
-                }
-                else if(data["statistic"]!=undefined){
-                    data=data["statistic"]
-                    // let new_data=vm.series[0].data
-                    for(let i in data){
-                        let field=data[i]["fields"]
-                        let datetime=new Date(field["record_date"]).getTime()
-                        vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
-                        vm.series[1].data.push({x:datetime,y:(field["tds"]!=null)?field["tds"].toFixed(2):null})
-                        vm.series[2].data.push({x:datetime,y:(field["water_temp"]!=null)?field["water_temp"].toFixed(2):null})
-                        vm.series[3].data.push({x:datetime,y:(field["air_temp"]!=null)?field["air_temp"].toFixed(2):null})
-                        vm.series[4].data.push({x:datetime,y:(field["humidity"]!=null)?field["humidity"].toFixed(2):null})
-                        vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
+                    else if(data['sensors_data']!=undefined){
+                        let d=data['sensors_data'];
+                        for (let i in d){
+                            if(typeof(d[i])=== 'number'){
+                                d[i]=d[i].toFixed(1)
+                            }
+                        }
+                        vm.temp=d["air_temp"];
+                        vm.co2=d["co2"];
+                        vm.hum=d["humidity"];
+                        vm.ph=d["ph"];
+                        vm.tds=d["tds"];
+                        vm.w_temp=d["water_temp"];
                     }
-                    vm.loading_charts=false;
-                    // vm.series[0]={data:new_data}
+                    else if(data["statistic"]!=undefined){
+                        data=data["statistic"]
+                        // let new_data=vm.series[0].data
+                        for(let i in data){
+                            let field=data[i]["fields"]
+                            let datetime=new Date(field["record_date"]).getTime()
+                            vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
+                            vm.series[1].data.push({x:datetime,y:(field["tds"]!=null)?field["tds"].toFixed(2):null})
+                            vm.series[2].data.push({x:datetime,y:(field["water_temp"]!=null)?field["water_temp"].toFixed(2):null})
+                            vm.series[3].data.push({x:datetime,y:(field["air_temp"]!=null)?field["air_temp"].toFixed(2):null})
+                            vm.series[4].data.push({x:datetime,y:(field["humidity"]!=null)?field["humidity"].toFixed(2):null})
+                            vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
+                        }
+                        vm.loading_charts=false;
+                        // vm.series[0]={data:new_data}
 
+                    }
+                    // else if(data["timetable"]!=undefined){
+                    //     data=data["timetable"]
+                    //     for(let i in data){
+                    //         let field=data[i]["fields"]
+                    //         let date=new Date(field["date"])
+                    //         vm.timeline[0].data.push({x:'параметры',y:[date.getTime(),date.getTime()+1]})
+                    //         for(let val in field){
+                    //             if(field[val]!=null && val!="date"){
+                    //                 // console.log(val+" "+field[val])
+                    //                 // vm.timeline[0].data.push({x:val+" "+field[val],y:[date.getTime(),date.getTime()+1]})
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
-                // else if(data["timetable"]!=undefined){
-                //     data=data["timetable"]
-                //     for(let i in data){
-                //         let field=data[i]["fields"]
-                //         let date=new Date(field["date"])
-                //         vm.timeline[0].data.push({x:'параметры',y:[date.getTime(),date.getTime()+1]})
-                //         for(let val in field){
-                //             if(field[val]!=null && val!="date"){
-                //                 // console.log(val+" "+field[val])
-                //                 // vm.timeline[0].data.push({x:val+" "+field[val],y:[date.getTime(),date.getTime()+1]})
-                //             }
-                //         }
-                //     }
-                // }
+                
             }
-            
-        }
-    },
-    methods:{
-        // socketConnect(){
-        //     this.socket.close(1000, "работа закончена")
-        //     this.socket = new WebSocket('ws://'+this.$hostname+'/ws/farm/'+this.$route.params.id+'/?Authorization=Token '+this.$cookies.get("AuthToken"))
-        // },
+        },
         sendMessage(action,options='{}') {
             console.log("sending: "+'{"action":"'+action+'","options":'+options+'}')
             this.socket.send('{"action":"'+action+'","options":'+options+'}');
