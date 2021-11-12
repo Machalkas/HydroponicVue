@@ -56,12 +56,23 @@
 
                         <div class="mt-3">
                             <Loader v-if="loading_charts"/>
-                            <div v-if="!loading_charts">
-                                <p class="text-center fw-normal mt-5 fs-4">Статистика</p>
-                                <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
+                            <div id="charts">
+                                <div v-if="!loading_charts">
+                                    <p class="text-center fw-normal mt-5 fs-4">Статистика</p>
+                                    <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
+                                </div>
+                                <div v-if="!loading_charts">
+                                    <apexchart height="200" type="line" :options="chartOptionsLine" :series="series"></apexchart>
+                                </div>
                             </div>
-                            <div v-if="!loading_charts">
-                                <apexchart height="200" type="line" :options="chartOptionsLine" :series="series"></apexchart>
+                            <div id="calendar" class="mt-3" v-if="!loading_charts">
+                                 <p class="text-center fw-normal mt-5 fs-4">Расписание</p>
+                                <calendar
+                                    :columns="$screens({ default: 1, lg: 3 })"
+                                    :rows="$screens({ default: 1, lg: 1 })"
+                                    :is-expanded="$screens({ default: true, lg: false })"
+                                    :attributes="calendar_attributes"
+                                />
                             </div>
                         </div>
                     </div>
@@ -207,6 +218,19 @@ export default{
                     
                 }
             },
+            calendar_attributes:[{
+                key: 'today',
+                dates: new Date(),
+                highlight: {
+                    color: 'blue',
+                    fillMode: 'outline',
+                },
+            },
+            {
+                key: 'task',
+                highlight: 'green',
+                dates: new Date(2021,10,14),
+        },],
         }
     },
     metaInfo(){
@@ -318,20 +342,18 @@ export default{
                         // vm.series[0]={data:new_data}
 
                     }
-                    // else if(data["timetable"]!=undefined){
-                    //     data=data["timetable"]
-                    //     for(let i in data){
-                    //         let field=data[i]["fields"]
-                    //         let date=new Date(field["date"])
-                    //         vm.timeline[0].data.push({x:'параметры',y:[date.getTime(),date.getTime()+1]})
-                    //         for(let val in field){
-                    //             if(field[val]!=null && val!="date"){
-                    //                 // console.log(val+" "+field[val])
-                    //                 // vm.timeline[0].data.push({x:val+" "+field[val],y:[date.getTime(),date.getTime()+1]})
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                    else if(data["timetable"]!=undefined){
+                        data=data["timetable"]
+                        for(let i in data){
+                            let field=data[i]["fields"]
+                            let date=new Date(field["date"])
+                            for(let val in field){
+                                if(field[val]!=null && val!="date"){
+                                    console.log(val+" "+field[val])
+                                }
+                            }
+                        }
+                    }
                 }
                 
             }
