@@ -107,6 +107,8 @@ export default{
             co2:"-",
             ph:"-",
             tds:"-",
+            
+            timetable:null,
 
             series: [{
                 name: 'PH',
@@ -229,8 +231,17 @@ export default{
             {
                 key: 'task',
                 highlight: 'green',
-                dates: new Date(2021,10,14),
-        },],
+                dates: null,
+            },
+            {
+                key: 'past_task',
+                highlight:{
+                    color: 'green',
+                    fillMode: 'light',
+                },
+                dates: null,
+
+            }],
         }
     },
     metaInfo(){
@@ -344,15 +355,26 @@ export default{
                     }
                     else if(data["timetable"]!=undefined){
                         data=data["timetable"]
+                        vm.timetable={dates:[],past_dates:[],params:[]}
                         for(let i in data){
                             let field=data[i]["fields"]
                             let date=new Date(field["date"])
+                            if(new Date()>date){
+                                vm.timetable.past_dates.push(date)
+                            }else{
+                                vm.timetable.dates.push(date)
+                            }
+                            let params={}
                             for(let val in field){
                                 if(field[val]!=null && val!="date"){
-                                    console.log(val+" "+field[val])
+                                    // console.log(val+" "+field[val])
+                                    params[val]=field[val]
                                 }
                             }
+                            vm.timetable.params.push(params)
                         }
+                        vm.calendar_attributes[1].dates=vm.timetable.dates
+                        vm.calendar_attributes[2].dates=vm.timetable.past_dates
                     }
                 }
                 
