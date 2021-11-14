@@ -72,6 +72,7 @@
                                     :rows="$screens({ default: 1, lg: 1 })"
                                     :is-expanded="$screens({ default: true, lg: false })"
                                     :attributes="calendar_attributes"
+                                    @dayclick="onDayClick"
                                 />
                             </div>
                         </div>
@@ -94,6 +95,7 @@ export default{
         return{
             loading:true,
             loading_charts:true,
+            now_date_interval:null,
             socket:null,
             name:"...",
             is_online:false,
@@ -257,6 +259,10 @@ export default{
         // setInterval(function(){console.log(this.socket);if(this.socket==null || this.socket.readyState==3){console.log(true);this.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken"))}},1000)
         
     },
+    beforeDestroy(){
+        clearInterval(this.now_date_interval)
+        this.socket.close(1000)
+    },
     methods:{
         socketStart(){
             let vm=this
@@ -283,11 +289,13 @@ export default{
                 // setTimeout(()=>vm.socket = new WebSocket('ws://'+vm.$hostname+'/ws/farm/'+vm.$route.params.id+'/?Authorization=Token '+vm.$cookies.get("AuthToken")),1000)
             }
 
-            this.socket.onclose = function(){
-                vm.loading=true
-                vm.loading_charts=true
-                if(!vm.timerID){
-                    vm.timerID=setInterval(function(){vm.socketStart()}, 5000)
+            this.socket.onclose = function(event){
+                if (event.code!=1000){
+                    vm.loading=true
+                    vm.loading_charts=true
+                    if(!vm.timerID){
+                        vm.timerID=setInterval(function(){vm.socketStart()}, 5000)
+                    }
                 }
             }
 
@@ -358,12 +366,12 @@ export default{
                         vm.timetable={dates:[],past_dates:[],params:[]}
                         for(let i in data){
                             let field=data[i]["fields"]
-                            let date=new Date(field["date"])
-                            if(new Date()>date){
-                                vm.timetable.past_dates.push(date)
-                            }else{
+                            let date=new Date(field["date"]).toDateString()
+                            // if(new Date()>date){
+                            //     vm.timetable.past_dates.push(date)
+                            // }else{
                                 vm.timetable.dates.push(date)
-                            }
+                            // }
                             let params={}
                             for(let val in field){
                                 if(field[val]!=null && val!="date"){
@@ -374,16 +382,39 @@ export default{
                             vm.timetable.params.push(params)
                         }
                         vm.calendar_attributes[1].dates=vm.timetable.dates
-                        vm.calendar_attributes[2].dates=vm.timetable.past_dates
+                        vm.updateNowDate()
+                        // vm.calendar_attributes[2].dates=vm.timetable.past_dates
                     }
                 }
                 
             }
         },
+        
         sendMessage(action,options='{}') {
             console.log("sending: "+'{"action":"'+action+'","options":'+options+'}')
             this.socket.send('{"action":"'+action+'","options":'+options+'}');
         },
+
+        onDayClick(day){
+            let index=-1
+            for (let i in this.timetable.dates){
+                if (this.timetable.dates[i]==new Date(day.date).toDateString()){
+                    index=i
+                }
+            }
+            if(index==-1){
+                console.log("None")
+            }
+            else{
+                console.log(this.timetable.params[index])
+                alert(index)
+            }
+        },
+        updateNowDate(){
+            this.now_date_interval=setInterval(()=>{
+                this.calendar_attributes[0].dates=new Date()
+            },1000)
+        }
     },
 }
 </script>

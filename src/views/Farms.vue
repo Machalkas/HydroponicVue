@@ -41,47 +41,49 @@ export default{
     metaInfo: {
       title: 'Фермы'
     },
-data(){
-    return{
-    farms:[],
-    loading:true,
-    interval_timer:null,
-    // error:"",
-    // test_socket:null
-    }
-},
-components:{
-    Header, Footer, Loader
-},
-mounted(){
-   this.getFapms()
-   this.interval_timer=setInterval(()=>this.getFapms(),10000)
-},
-methods:{
-    openFarm(id){
-        if (this.interval_timer){
-            clearInterval(this.interval_timer)
-            this.interval_timer=0
+    data(){
+        return{
+        farms:[],
+        loading:true,
+        interval_timer:null,
+        // error:"",
+        // test_socket:null
         }
-        this.$router.push('farm/'+id);
     },
-    getFapms(){
-        console.log("getfarms")
-        this.axios.get("/api/get-farms/",{headers: {'Authorization': 'Token '+this.$cookies.get("AuthToken")}}).then(responce=>{
-            console.log(responce['data']['farms']);
-            this.farms=responce['data']['farms'];
-            this.loading=false;
-        }).catch(error=>{
-            console.log("error")
-            this.loading=true
-            this.$notify({
-                    group: 'foo',
-                    type:'error',
-                    title: 'Ошибка',
-                    text: error
-            });
-        })
-    }
+    components:{
+        Header, Footer, Loader
+    },
+    mounted(){
+    this.getFapms()
+    this.interval_timer=setInterval(()=>this.getFapms(),60000*5)
+    },
+    beforeDestroy(){
+        if (this.interval_timer){
+                clearInterval(this.interval_timer)
+                this.interval_timer=null
+            }
+    },
+    methods:{
+        openFarm(id){
+            this.$router.push('farm/'+id);
+        },
+        getFapms(){
+            console.log("getfarms")
+            this.axios.get("/api/get-farms/",{headers: {'Authorization': 'Token '+this.$cookies.get("AuthToken")}}).then(responce=>{
+                console.log(responce['data']['farms']);
+                this.farms=responce['data']['farms'];
+                this.loading=false;
+            }).catch(error=>{
+                console.log("error")
+                this.loading=true
+                this.$notify({
+                        group: 'foo',
+                        type:'error',
+                        title: 'Ошибка',
+                        text: error
+                });
+            })
+        }
     }
 }
 </script>
