@@ -1,0 +1,92 @@
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body class="mt-5">
+    <div class="container">
+        <div class="row"></div>
+        <div class="col-md-2 themed-grid-col"></div>
+        <div class="col-md-8 themed-grid-col">
+            <img src="/src/assets/svg/bin.svg" alt="" class="bin">
+            <div class="br">
+                <p class="m-2 h5">02.06.2021</p>
+                <div class="row m-3 ml-2">
+                    <p class="h5">Свет</p>
+                    <div class="col-sm-6">
+                        <label for="timeOn" class="form-label">Время включения</label>
+                        <input type="time" class="form-control" id="timeOn" placeholder="" value="" required="">
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="timeOff" class="form-label">Время выключения</label>
+                        <input type="time" class="form-control" id="timeOff" placeholder="" value="" required="">
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                </div> 
+                <div class="row m-3 ml-2">
+                    <p class="h5">CO2</p>
+                    <div class="col-12">
+                        <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" value="" required="">
+                        <small class="text-muted">ppm</small>
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                </div> 
+                <div class="row m-3 ml-2">
+                    <p class="h5">Растворы</p>
+                    <div class="col-sm-4">
+                        <label for="solution1" class="form-label">Раствор 1</label>
+                        <input type="number" min="0" class="form-control" id="solution1" placeholder="" value="" required="">
+                        <small class="text-muted">ml</small>
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="solution2" class="form-label">Раствор 2</label>
+                        <input type="number" min="0" class="form-control" id="solution2" placeholder="" value="" required="">
+                        <small class="text-muted">ml</small>
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="solution3" class="form-label">Раствор 3</label>
+                        <input type="number" min="0" class="form-control" id="solution3" placeholder="" value="" required="">
+                        <small class="text-muted">ml</small>
+                        <div class="invalid-feedback">
+                        Valid first name is required.
+                        </div>
+                    </div>
+                </div>
+                <div class="m-4">
+                    <button type="button" class="btn btn-danger">Сбросить</button>
+                </div>
+            </div>
+            <div class="m-2">
+                <button type="button" class="btn btn-success">Сохранить все</button>
+                <button type="button" class="btn btn-danger">Сбросить все</button>
+            </div>
+        </div>
+        <div class="col-md-2 themed-grid-col"></div>
+    </div>
+    
+
+    <style>
+    .br{
+        border: 2px solid #828282;
+        border-radius: 10px;
+        min-height:10em;
+    }
+    .bin{
+        margin-top: 0.5em;
+        float: right;
+        margin-right: 0.5em;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>

@@ -13,7 +13,7 @@
             </ul>
     
             <div class="col-md-3 text-end">
-            <a href="#" class="btn btn-outline-danger" v-if="this.$cookies.get('AuthToken')!=null" v-on:click="logout">Выйти</a>
+            <a class="btn btn-outline-danger" v-if="this.$cookies.get('AuthToken')!=null" v-on:click="logout">Выйти</a>
             <router-link to="/user/auth" class="btn btn-success" v-if="this.$cookies.get('AuthToken')==null">Авторизация</router-link>
             </div>
         </header>

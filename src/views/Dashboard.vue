@@ -16,37 +16,37 @@
                         <div class="container">
                             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">Влажность</p>
                                         <p class="s_indicator_val">{{hum}}%</p>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">Температура</p>
                                         <p class="s_indicator_val">{{temp}}°C</p>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">Температура раствора</p>
                                         <p class="s_indicator_val">{{w_temp}}°C</p>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">CO2</p>
                                         <p class="s_indicator_val">{{co2}}ppm</p>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">PH</p>
                                         <p class="s_indicator_val">{{ph}}</p>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="s_indicator">
+                                    <div class="grey_border">
                                         <p class="s_indicator_name">TDS</p>
                                         <p class="s_indicator_val">{{tds}}ppm</p>
                                     </div>
@@ -74,6 +74,77 @@
                                     :attributes="calendar_attributes"
                                     @dayclick="onDayClick"
                                 />
+
+
+                                <div class="grey_border mt-4" style="text-align: initial;">
+                                    <div class="modal-header border-bottom-0">
+                                        <p class="m-2 h4 modal-title">02.06.2021</p>
+                                        <div class="del_button">
+                                             <img src="../assets/svg/bin.svg" alt="" height="20" class="mb-2 bin">
+                                        </div>
+                                    </div>
+                                    <div class="row m-3 ml-2">
+                                        <p class="h5">Свет</p>
+                                        <div class="col-sm-6">
+                                            <label for="timeOn" class="form-label">Время включения</label>
+                                            <input type="time" class="form-control" id="timeOn" placeholder="" value="" required="">
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="timeOff" class="form-label">Время выключения</label>
+                                            <input type="time" class="form-control" id="timeOff" placeholder="" value="" required="">
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="row m-3 ml-2">
+                                        <p class="h5">CO2</p>
+                                        <div class="col-12">
+                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" value="" required="">
+                                            <small class="text-muted">ppm</small>
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="row m-3 ml-2">
+                                        <p class="h5">Растворы</p>
+                                        <div class="col-sm-4">
+                                            <label for="solution1" class="form-label">Раствор 1</label>
+                                            <input type="number" min="0" class="form-control" id="solution1" placeholder="" value="" required="">
+                                            <small class="text-muted">ml</small>
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label for="solution2" class="form-label">Раствор 2</label>
+                                            <input type="number" min="0" class="form-control" id="solution2" placeholder="" value="" required="">
+                                            <small class="text-muted">ml</small>
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label for="solution3" class="form-label">Раствор 3</label>
+                                            <input type="number" min="0" class="form-control" id="solution3" placeholder="" value="" required="">
+                                            <small class="text-muted">ml</small>
+                                            <div class="invalid-feedback">
+                                            Valid first name is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="m-4">
+                                        <button type="button" class="btn btn-danger">Сбросить</button>
+                                    </div>
+                                </div>
+                                <div class="m-2">
+                                    <button type="button" class="btn btn-success m-1">Сохранить все</button>
+                                    <button type="button" class="btn btn-danger m-1">Сбросить все</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -420,7 +491,7 @@ export default{
 </script>
 
 <style scoped>
-    .s_indicator{
+    .grey_border{
         border: 2px solid #828282;
         border-radius: 10px;
     }
@@ -444,5 +515,19 @@ export default{
         display: none;
         /* border: 2px solid #FF0000;
         background-color: #FF0000;   */
+    }
+    .bin{
+        margin-top: 0.5em;
+        float: right;
+        margin-right: 0.5em;
+    }
+    .del_button{
+        transition: transform 0.3s ease;
+        /* background-color: grey; */
+    }
+    .del_button:hover{
+        filter: saturate(4500%) hue-rotate(145deg) brightness(100%) contrast(100%);
+        /* background-color: red; */
+        transform: scale(1.3,1.3);
     }
 </style>
