@@ -78,7 +78,7 @@
 
                                 <div class="grey_border mt-4" style="text-align: initial;">
                                     <div class="modal-header border-bottom-0">
-                                        <p class="m-2 h4 modal-title">02.06.2021</p>
+                                        <p class="m-2 h4 modal-title">{{selected_timetable.date}}</p>
                                         <div class="del_button">
                                              <img src="../assets/svg/bin.svg" alt="" height="20" class="mb-2 bin">
                                         </div>
@@ -87,14 +87,14 @@
                                         <p class="h5">Свет</p>
                                         <div class="col-sm-6">
                                             <label for="timeOn" class="form-label">Время включения</label>
-                                            <input type="time" class="form-control" id="timeOn" placeholder="" value="" required="">
+                                            <input type="time" class="form-control" id="timeOn" placeholder="" :value="selected_timetable.light_on" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="timeOff" class="form-label">Время выключения</label>
-                                            <input type="time" class="form-control" id="timeOff" placeholder="" value="" required="">
+                                            <input type="time" class="form-control" id="timeOff" placeholder="" :value="selected_timetable.light_off" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
@@ -103,7 +103,7 @@
                                     <div class="row m-3 ml-2">
                                         <p class="h5">CO2</p>
                                         <div class="col-12">
-                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" value="" required="">
+                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" :value="selected_timetable.co2" required="">
                                             <small class="text-muted">ppm</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -114,7 +114,7 @@
                                         <p class="h5">Растворы</p>
                                         <div class="col-sm-4">
                                             <label for="solution1" class="form-label">Раствор 1</label>
-                                            <input type="number" min="0" class="form-control" id="solution1" placeholder="" value="" required="">
+                                            <input type="number" min="0" class="form-control" id="solution1" placeholder="" :value="selected_timetable.solution1" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="solution2" class="form-label">Раствор 2</label>
-                                            <input type="number" min="0" class="form-control" id="solution2" placeholder="" value="" required="">
+                                            <input type="number" min="0" class="form-control" id="solution2" placeholder="" :value="selected_timetable.solution2" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -130,7 +130,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="solution3" class="form-label">Раствор 3</label>
-                                            <input type="number" min="0" class="form-control" id="solution3" placeholder="" value="" required="">
+                                            <input type="number" min="0" class="form-control" id="solution3" placeholder="" :value="selected_timetable.solution3" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -138,7 +138,7 @@
                                         </div>
                                     </div>
                                     <div class="m-4">
-                                        <button type="button" class="btn btn-danger">Сбросить</button>
+                                        <button type="button" class="btn btn-danger" v-on:click="resetParameters">Сбросить</button>
                                     </div>
                                 </div>
                                 <div class="m-2">
@@ -171,8 +171,8 @@ export default{
             name:"...",
             is_online:false,
             timerID:0,
-            min_date:null,
-            max_date:null,
+            // min_date:null,
+            // max_date:null,
 
             hum:"-",
             temp:"-",
@@ -182,6 +182,17 @@ export default{
             tds:"-",
             
             timetable:null,
+            changed_timetable:null,
+            seleced_date_index:1,
+            selected_timetable:{
+                date:null,
+                light_on:null,
+                light_off:null,
+                co2:null,
+                solution1:null,
+                solution2:null,
+                solution3:null
+            },
 
             series: [{
                 name: 'PH',
@@ -308,10 +319,7 @@ export default{
             },
             {
                 key: 'past_task',
-                highlight:{
-                    color: 'green',
-                    fillMode: 'light',
-                },
+                highlight: 'yellow',
                 dates: null,
 
             }],
@@ -332,6 +340,7 @@ export default{
     },
     beforeDestroy(){
         clearInterval(this.now_date_interval)
+        clearInterval(this.timerID)
         this.socket.close(1000)
     },
     methods:{
@@ -454,6 +463,7 @@ export default{
                         }
                         vm.calendar_attributes[1].dates=vm.timetable.dates
                         vm.updateNowDate()
+                        vm.showTimetableParams(new Date())
                         // vm.calendar_attributes[2].dates=vm.timetable.past_dates
                     }
                 }
@@ -467,24 +477,45 @@ export default{
         },
 
         onDayClick(day){
+            this.showTimetableParams(day.date)
+        },
+        showTimetableParams(day){
             let index=-1
             for (let i in this.timetable.dates){
-                if (this.timetable.dates[i]==new Date(day.date).toDateString()){
+                if (this.timetable.dates[i]==new Date(day).toDateString()){
                     index=i
                 }
             }
             if(index==-1){
                 console.log("None")
+                this.selected_timetable.date=new Date(day).toLocaleDateString()
+                this.selected_timetable.solution1=null
+                this.selected_timetable.solution2=null
+                this.selected_timetable.solution3=null
+                this.selected_timetable.co2=null
+                this.selected_timetable.light_on=null
+                this.selected_timetable.light_off=null
             }
             else{
                 console.log(this.timetable.params[index])
-                alert(index)
+                console.log(this.timetable.dates[index])
+                
+                this.selected_timetable.date=new Date(day).toLocaleDateString()
+                this.selected_timetable.solution1=this.timetable.params[index].solution1
+                this.selected_timetable.solution2=this.timetable.params[index].solution2
+                this.selected_timetable.solution3=this.timetable.params[index].solution3
+                this.selected_timetable.co2=this.timetable.params[index].co2
+                this.selected_timetable.light_on=this.timetable.params[index].light_on_time
+                this.selected_timetable.light_off=this.timetable.params[index].light_off_time
             }
         },
         updateNowDate(){
             this.now_date_interval=setInterval(()=>{
                 this.calendar_attributes[0].dates=new Date()
             },1000)
+        },
+        resetParameters(){
+            null
         }
     },
 }
@@ -496,6 +527,7 @@ export default{
         border-radius: 10px;
     }
     .s_indicator_name{
+        margin-top: 0.7em;
         font-size: 1.4em;
     }
     .s_indicator_val{
@@ -517,9 +549,9 @@ export default{
         background-color: #FF0000;   */
     }
     .bin{
-        margin-top: 0.5em;
-        float: right;
-        margin-right: 0.5em;
+        /* margin-top: 0.5em; */
+        /* float: right; */
+        /* margin-right: 0.5em; */
     }
     .del_button{
         transition: transform 0.3s ease;
@@ -530,4 +562,13 @@ export default{
         /* background-color: red; */
         transform: scale(1.3,1.3);
     }
+    .del_button_activate{
+        transition: transform 0.3s ease;
+        filter: saturate(4500%) hue-rotate(145deg) brightness(100%) contrast(100%);
+    }
+    .del_button_activate:hover{
+        transform: scale(1.3,1.3);
+        filter:none;
+    }
+    
 </style>
