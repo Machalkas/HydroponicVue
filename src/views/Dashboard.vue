@@ -87,14 +87,14 @@
                                         <p class="h5">Свет</p>
                                         <div class="col-sm-6">
                                             <label for="timeOn" class="form-label">Время включения</label>
-                                            <input type="time" class="form-control" id="timeOn" placeholder="" :value="selected_timetable.light_on" required="">
+                                            <input type="time" class="form-control" id="timeOn" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_on" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="timeOff" class="form-label">Время выключения</label>
-                                            <input type="time" class="form-control" id="timeOff" placeholder="" :value="selected_timetable.light_off" required="">
+                                            <input type="time" class="form-control" id="timeOff" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_off" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
@@ -103,7 +103,7 @@
                                     <div class="row m-3 ml-2">
                                         <p class="h5">CO2</p>
                                         <div class="col-12">
-                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" :value="selected_timetable.co2" required="">
+                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" v-on="inputListeners" v-model="selected_timetable.co2"  required="">
                                             <small class="text-muted">ppm</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -114,7 +114,7 @@
                                         <p class="h5">Растворы</p>
                                         <div class="col-sm-4">
                                             <label for="solution1" class="form-label">Раствор 1</label>
-                                            <input type="number" min="0" class="form-control" id="solution1" placeholder="" :value="selected_timetable.solution1" required="">
+                                            <input type="number" min="0" class="form-control" id="solution1" placeholder="" v-on="inputListeners" v-model="selected_timetable.solution1" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="solution2" class="form-label">Раствор 2</label>
-                                            <input type="number" min="0" class="form-control" id="solution2" placeholder="" :value="selected_timetable.solution2" required="">
+                                            <input type="number" min="0" class="form-control" id="solution2" placeholder="" v-on="inputListeners" v-model="selected_timetable.solution2" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -130,7 +130,7 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="solution3" class="form-label">Раствор 3</label>
-                                            <input type="number" min="0" class="form-control" id="solution3" placeholder="" :value="selected_timetable.solution3" required="">
+                                            <input type="number" min="0" class="form-control" id="solution3" placeholder="" v-on="inputListeners" v-model="selected_timetable.solution3" required="">
                                             <small class="text-muted">ml</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
@@ -138,12 +138,12 @@
                                         </div>
                                     </div>
                                     <div class="m-4">
-                                        <button type="button" class="btn btn-danger" v-on:click="resetParameters">Сбросить</button>
+                                        <button type="button" class="btn btn-danger" v-on:click="resetParameters(selected_timetable.date)">Сбросить</button>
                                     </div>
                                 </div>
                                 <div class="m-2">
                                     <button type="button" class="btn btn-success m-1">Сохранить все</button>
-                                    <button type="button" class="btn btn-danger m-1">Сбросить все</button>
+                                    <button type="button" class="btn btn-danger m-1" v-on:click="resetParameters()">Сбросить все</button>
                                 </div>
                             </div>
                         </div>
@@ -182,8 +182,7 @@ export default{
             tds:"-",
             
             timetable:null,
-            changed_timetable:null,
-            seleced_date_index:1,
+            changed_timetable:{},
             selected_timetable:{
                 date:null,
                 light_on:null,
@@ -443,7 +442,7 @@ export default{
                     }
                     else if(data["timetable"]!=undefined){
                         data=data["timetable"]
-                        vm.timetable={dates:[],past_dates:[],params:[]}
+                        vm.timetable={dates:[],params:[]}
                         for(let i in data){
                             let field=data[i]["fields"]
                             let date=new Date(field["date"]).toDateString()
@@ -514,10 +513,59 @@ export default{
                 this.calendar_attributes[0].dates=new Date()
             },1000)
         },
-        resetParameters(){
-            null
+        resetParameters(date=null){
+            console.log("reset")
+            if(date==null){
+                this.changed_timetable={}
+            }
+            else{
+                delete this.changed_timetable[date]
+            }
+            this.showChangedTimetable()
+        },
+        showChangedTimetable(){
+            let dates=[]
+            for (let i in this.changed_timetable){
+                let date=i.split('.')
+                dates.push(new Date(date[2]-0,date[1]-1,date[0]-0))
+            }
+            this.calendar_attributes[2].dates=dates
         }
     },
+    computed:{
+        inputListeners: function(){
+            var vm = this
+            return Object.assign({},
+            { 
+                input: function(event){
+                    console.log(event.target)
+                vm.changed_timetable[vm.selected_timetable.date]={action:"change",data:vm.selected_timetable}
+                    // delete vm.changed_timetable[vm.selected_timetable.date].date
+                    vm.showChangedTimetable()
+                }
+            }
+            )
+        }
+    },
+    // watch:{
+    //     selected_timetable:{
+    //         handler: function(val, old_val){
+    //             console.log("val:"+val+" old val:"+old_val)
+    //         },
+    //         deep:true
+    //     }
+        // selected_timetable:[
+        //     'handle1',
+        //     function handle2(val, old_val){
+        //         console.log("h2")
+        //     },
+        //     {
+        //     handle:function handle3(val, old_val){
+        //         console.log(3)
+        //     }
+        //     }
+        // ]
+    // },
 }
 </script>
 
