@@ -80,37 +80,38 @@
                                     <div class="modal-header border-bottom-0">
                                         <p class="m-2 h4 modal-title">{{selected_timetable.date}}</p>
                                         <div class="del_button">
-                                             <img src="../assets/svg/bin.svg" alt="" height="20" class="mb-2 bin">
+                                             <img src="../assets/svg/bin.svg" alt="" height="20" class="mb-2 bin" v-on:click="deleteParameters(selected_timetable.date)" v-bind:class="{del_button_activate:selected_timetable.is_deleted, del_button:!selected_timetable.is_deleted}">
+                                             <!-- <p>{{selected_timetable.is_deleted}}</p> -->
                                         </div>
                                     </div>
-                                    <div class="row m-3 ml-2">
+                                    <div class="row m-3 ml-2" v-bind:class="{disabled_input:selected_timetable.is_deleted}">
                                         <p class="h5">Свет</p>
                                         <div class="col-sm-6">
                                             <label for="timeOn" class="form-label">Время включения</label>
-                                            <input type="time" class="form-control" id="timeOn" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_on" required="">
+                                            <input type="time" class="form-control" id="timeOn" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_on_time" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="timeOff" class="form-label">Время выключения</label>
-                                            <input type="time" class="form-control" id="timeOff" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_off" required="">
+                                            <input type="time" class="form-control" id="timeOff" placeholder="" v-on="inputListeners" v-model="selected_timetable.light_off_time" required="">
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
                                         </div>
                                     </div> 
-                                    <div class="row m-3 ml-2">
+                                    <div class="row m-3 ml-2" v-bind:class="{disabled_input:selected_timetable.is_deleted}">
                                         <p class="h5">CO2</p>
                                         <div class="col-12">
-                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="timeOn" placeholder="" v-on="inputListeners" v-model="selected_timetable.co2"  required="">
+                                            <input type="number" min="0" max="5000" step="1" class="form-control" id="co2" placeholder="" v-on="inputListeners" v-model="selected_timetable.co2"  required="">
                                             <small class="text-muted">ppm</small>
                                             <div class="invalid-feedback">
                                             Valid first name is required.
                                             </div>
                                         </div>
                                     </div> 
-                                    <div class="row m-3 ml-2">
+                                    <div class="row m-3 ml-2" v-bind:class="{disabled_input:selected_timetable.is_deleted}">
                                         <p class="h5">Растворы</p>
                                         <div class="col-sm-4">
                                             <label for="solution1" class="form-label">Раствор 1</label>
@@ -185,12 +186,13 @@ export default{
             changed_timetable:{},
             selected_timetable:{
                 date:null,
-                light_on:null,
-                light_off:null,
+                light_on_time:null,
+                light_off_time:null,
                 co2:null,
                 solution1:null,
                 solution2:null,
-                solution3:null
+                solution3:null,
+                is_deleted:false,
             },
 
             series: [{
@@ -317,8 +319,14 @@ export default{
                 dates: null,
             },
             {
-                key: 'past_task',
+                key: 'changed_task',
                 highlight: 'yellow',
+                dates: null,
+
+            },
+            {
+                key: 'deleted_task',
+                highlight: 'red',
                 dates: null,
 
             }],
@@ -480,32 +488,51 @@ export default{
         },
         showTimetableParams(day){
             let index=-1
-            for (let i in this.timetable.dates){
-                if (this.timetable.dates[i]==new Date(day).toDateString()){
-                    index=i
+            console.log(this.changed_timetable[new Date(day).toLocaleDateString()])
+            if (this.changed_timetable[new Date(day).toLocaleDateString()]==undefined){
+                console.log("no change")
+                for (let i in this.timetable.dates){
+                    if (this.timetable.dates[i]==new Date(day).toDateString()){
+                        index=i
+                    }
                 }
-            }
-            if(index==-1){
-                console.log("None")
-                this.selected_timetable.date=new Date(day).toLocaleDateString()
-                this.selected_timetable.solution1=null
-                this.selected_timetable.solution2=null
-                this.selected_timetable.solution3=null
-                this.selected_timetable.co2=null
-                this.selected_timetable.light_on=null
-                this.selected_timetable.light_off=null
-            }
-            else{
-                console.log(this.timetable.params[index])
-                console.log(this.timetable.dates[index])
-                
-                this.selected_timetable.date=new Date(day).toLocaleDateString()
-                this.selected_timetable.solution1=this.timetable.params[index].solution1
-                this.selected_timetable.solution2=this.timetable.params[index].solution2
-                this.selected_timetable.solution3=this.timetable.params[index].solution3
-                this.selected_timetable.co2=this.timetable.params[index].co2
-                this.selected_timetable.light_on=this.timetable.params[index].light_on_time
-                this.selected_timetable.light_off=this.timetable.params[index].light_off_time
+                day=new Date(day).toLocaleDateString()
+                if(index==-1){
+                    console.log("None")
+                    this.selected_timetable.date=day
+                    this.selected_timetable.solution1=null
+                    this.selected_timetable.solution2=null
+                    this.selected_timetable.solution3=null
+                    this.selected_timetable.co2=null
+                    this.selected_timetable.light_on_time=null
+                    this.selected_timetable.light_off_time=null
+                    this.selected_timetable.is_deleted=false
+                }
+                else{
+                    console.log(this.timetable.params[index])
+                    console.log(this.timetable.dates[index])
+                    
+                    this.selected_timetable.date=day
+                    this.selected_timetable.solution1=this.timetable.params[index].solution1
+                    this.selected_timetable.solution2=this.timetable.params[index].solution2
+                    this.selected_timetable.solution3=this.timetable.params[index].solution3
+                    this.selected_timetable.co2=this.timetable.params[index].co2
+                    this.selected_timetable.light_on_time=this.timetable.params[index].light_on_time
+                    this.selected_timetable.light_off_time=this.timetable.params[index].light_off_time
+                    this.selected_timetable.is_deleted=false
+                }
+            }else{
+                console.log("change")
+                day=new Date(day).toLocaleDateString()
+                this.selected_timetable.date=day
+                this.selected_timetable.solution1=this.changed_timetable[day].data.solution1
+                this.selected_timetable.solution2=this.changed_timetable[day].data.solution2
+                this.selected_timetable.solution3=this.changed_timetable[day].data.solution3
+                this.selected_timetable.co2=this.changed_timetable[day].data.co2
+                this.selected_timetable.light_on_time=this.changed_timetable[day].data.light_on_time
+                this.selected_timetable.light_off_time=this.changed_timetable[day].data.light_off_time
+                this.selected_timetable.is_deleted=this.changed_timetable[day].action=="delete"
+                console.log("tt "+this.changed_timetable[day].action)
             }
         },
         updateNowDate(){
@@ -522,14 +549,45 @@ export default{
                 delete this.changed_timetable[date]
             }
             this.showChangedTimetable()
+            let dt=this.selected_timetable.date.split('.')
+            dt=new Date(dt[2]-0,dt[1]-1,dt[0]-0)
+             this.showTimetableParams(dt)
+        },
+        deleteParameters(date){
+            let dt=date.split('.')
+            dt=new Date(dt[2]-0,dt[1]-1,dt[0]-0)
+            if (this.timetable.dates.indexOf(dt.toDateString())!=-1){
+                if(this.changed_timetable[date]==undefined){
+                    let data={}
+                    for(let i in this.timetable.params[this.timetable.dates.indexOf(dt.toDateString())]){
+                        data[i]=this.timetable.params[i]
+                    }
+                    this.changed_timetable[date]={action:"delete",data:data}
+                }else{
+                    if (this.changed_timetable[date].action=="delete"){
+                        this.changed_timetable[date].action="change"
+                    }else{
+                        this.changed_timetable[date].action="delete"
+                    }
+                }
+                this.showChangedTimetable()
+                this.showTimetableParams(dt)
+            }
         },
         showChangedTimetable(){
-            let dates=[]
+            let changed_dates=[]
+            let deleted_dates=[]
             for (let i in this.changed_timetable){
                 let date=i.split('.')
-                dates.push(new Date(date[2]-0,date[1]-1,date[0]-0))
+                if(this.changed_timetable[i].action=="change"){
+                    changed_dates.push(new Date(date[2]-0,date[1]-1,date[0]-0))
+                }
+                else if(this.changed_timetable[i].action=="delete"){
+                    deleted_dates.push(new Date(date[2]-0,date[1]-1,date[0]-0))
+                }
             }
-            this.calendar_attributes[2].dates=dates
+            this.calendar_attributes[2].dates=changed_dates
+            this.calendar_attributes[3].dates=deleted_dates
         }
     },
     computed:{
@@ -538,8 +596,14 @@ export default{
             return Object.assign({},
             { 
                 input: function(event){
-                    console.log(event.target)
-                vm.changed_timetable[vm.selected_timetable.date]={action:"change",data:vm.selected_timetable}
+                    console.log(event.target.id)
+                    console.log("input")
+                    let data={}
+                    for (let i in vm.selected_timetable){
+                        data[i]=vm.selected_timetable[i]
+                        console.log(i+"="+vm.selected_timetable[i])
+                    }
+                    vm.changed_timetable[vm.selected_timetable.date]={action:"change",data:data}
                     // delete vm.changed_timetable[vm.selected_timetable.date].date
                     vm.showChangedTimetable()
                 }
@@ -606,7 +670,6 @@ export default{
         /* background-color: grey; */
     }
     .del_button:hover{
-        filter: saturate(4500%) hue-rotate(145deg) brightness(100%) contrast(100%);
         /* background-color: red; */
         transform: scale(1.3,1.3);
     }
@@ -616,7 +679,11 @@ export default{
     }
     .del_button_activate:hover{
         transform: scale(1.3,1.3);
-        filter:none;
+        filter: saturate(4500%) hue-rotate(145deg) brightness(100%) contrast(100%);
+    }
+    .disabled_input{
+        pointer-events: none;
+        opacity: .65;
     }
     
 </style>
