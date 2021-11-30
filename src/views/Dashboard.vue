@@ -56,16 +56,17 @@
 
                         <div class="mt-3">
                             <Loader v-if="loading_charts"/>
-                            <div id="charts">
-                                <div v-if="!loading_charts">
+                            <div id="charts" v-if="!loading_charts">
+                                <div>
                                     <p class="text-center fw-normal mt-5 fs-4">Статистика</p>
                                     <apexchart width="100%" type="line" :options="chartOptions" :series="series"></apexchart>
                                 </div>
-                                <div v-if="!loading_charts">
+                                <div>
                                     <apexchart height="200" type="line" :options="chartOptionsLine" :series="series"></apexchart>
                                 </div>
                             </div>
-                            <div id="calendar" class="mt-3" v-if="!loading_charts">
+                            <Loader v-if="loading_timetable"/>
+                            <div id="calendar" class="mt-3" v-if="!loading_timetable">
                                  <p class="text-center fw-normal mt-5 fs-4">Расписание</p>
                                 <calendar
                                     :columns="$screens({ default: 1, lg: 3 })"
@@ -167,6 +168,7 @@ export default{
         return{
             loading:true,
             loading_charts:true,
+            loading_timetable:true,
             now_date_interval:null,
             socket:null,
             name:"...",
@@ -380,6 +382,7 @@ export default{
                 if (event.code!=1000){
                     vm.loading=true
                     vm.loading_charts=true
+                    vm.loading_timetable=true
                     if(!vm.timerID){
                         vm.timerID=setInterval(function(){vm.socketStart()}, 5000)
                     }
@@ -471,6 +474,7 @@ export default{
                         vm.calendar_attributes[1].dates=vm.timetable.dates
                         vm.updateNowDate()
                         vm.showTimetableParams(new Date())
+                        vm.loading_timetable=false
                         // vm.calendar_attributes[2].dates=vm.timetable.past_dates
                     }
                 }
