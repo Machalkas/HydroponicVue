@@ -139,12 +139,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="m-4">
+                                    <div class="m-4" v-bind:class="{disabled_input:!changed_timetable[selected_timetable.date]}">
                                         <button type="button" class="btn btn-danger" v-on:click="resetParameters(selected_timetable.date)">Сбросить</button>
                                     </div>
                                 </div>
-                                <div class="m-2">
-                                    <button type="button" class="btn btn-success m-1">Сохранить все</button>
+                                <div class="m-2" v-bind:class="{disabled_input:!Object.keys(changed_timetable).length}">
+                                    <button type="button" class="btn btn-success m-1" v-on:click="saveParameters() ">Сохранить все</button>
                                     <button type="button" class="btn btn-danger m-1" v-on:click="resetParameters()">Сбросить все</button>
                                 </div>
                             </div>
@@ -472,8 +472,11 @@ export default{
                             vm.timetable.params.push(params)
                         }
                         vm.calendar_attributes[1].dates=vm.timetable.dates
+                        vm.calendar_attributes[2].dates=[]
+                        vm.calendar_attributes[3].dates=[]
                         vm.updateNowDate()
                         vm.showTimetableParams(new Date())
+                        vm.changed_timetable={}
                         vm.loading_timetable=false
                         // vm.calendar_attributes[2].dates=vm.timetable.past_dates
                     }
@@ -577,6 +580,19 @@ export default{
                 this.showChangedTimetable()
                 this.showTimetableParams(dt)
             }
+        },
+        saveParameters(){
+            this.loading_timetable=true
+            for (let i in this.changed_timetable){
+                if(this.changed_timetable[i].action=="change"){
+                    delete this.changed_timetable[i].data.is_deleted
+                    // let d=this.changed_timetable[i].data.date
+                    // d=d.split(".")
+                    // console.log("d="+d)
+                    // this.changed_timetable[i].data.date=d[2]+"-"+d[1]+"-"+d[0]
+                }
+            }
+            this.sendMessage("save_timetable",JSON.stringify(this.changed_timetable))
         },
         showChangedTimetable(){
             let changed_dates=[]
