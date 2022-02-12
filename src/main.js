@@ -11,8 +11,8 @@ import VueMeta from 'vue-meta'
 
 Vue.config.productionTip = false
 
-Vue.prototype.$hostname = '127.0.0.1:8000'
-// Vue.prototype.$hostname = '192.168.1.254:8000'
+// Vue.prototype.$hostname = '127.0.0.1:8000'
+Vue.prototype.$hostname = '192.168.1.254:8000'
 
 Vue.use(axios)
 Vue.prototype.axios=axios.create({baseURL:"http://"+Vue.prototype.$hostname, timeout:3000})

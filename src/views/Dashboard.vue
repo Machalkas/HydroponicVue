@@ -429,10 +429,14 @@ export default{
                         vm.w_temp=d["water_temp"];
                     }
                     else if(data["statistic"]!=undefined){
+                        let datetime
                         data=data["statistic"]
-                        // let new_data=vm.series[0].data
-                         let datetime
+                        console.log("data=",data)
+                        if (!Array.isArray(data)){
+                            data=[{fields:data}]
+                        }
                         for(let i in data){
+                            console.log('i=',i)
                             let field=data[i]["fields"]
                             datetime=new Date(field["record_date"]).getTime()
                             vm.series[0].data.push({x:datetime,y:(field["ph"]!=null)?field["ph"].toFixed(2):null})
@@ -442,6 +446,7 @@ export default{
                             vm.series[4].data.push({x:datetime,y:(field["humidity"]!=null)?field["humidity"].toFixed(2):null})
                             vm.series[5].data.push({x:datetime,y:(field["co2"]!=null)?field["co2"].toFixed(2):null})
                         }
+                        console.log("new statistic! data len =",vm.series[0].data.length)
                         vm.loading_charts=false;
                         vm.min_date=datetime
                         datetime=new Date(datetime)
